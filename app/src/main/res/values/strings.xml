@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name"> Mitchells NASA App</string>
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">it1fbf6TOK893o4iZC8FyWdN</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">BOnuxr0MPL6F8ZSPyzfrXn5aIyFwqaizxPBImoLgSsPhVXL7k9</string>
+    <string name="facebook_app_id">190875404803080</string>
+    <string name="fb_login_protocol_scheme">fb190875404803080</string>
+
+
+</resources>
