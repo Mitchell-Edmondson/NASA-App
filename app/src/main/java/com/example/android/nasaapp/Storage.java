@@ -37,6 +37,7 @@ public class Storage extends SQLiteOpenHelper
         onCreate(sqLiteDatabase);
     }
 
+    //Insert the photographers name into the database
     public void insertdata(String s)
     {
         //Delete previous entry
@@ -53,6 +54,7 @@ public class Storage extends SQLiteOpenHelper
         "\nResult = " + result);
     }
 
+    //Return the photographers name
     public String recieveData()
     {
         SQLiteDatabase database = this.getReadableDatabase();

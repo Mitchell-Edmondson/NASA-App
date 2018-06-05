@@ -49,9 +49,11 @@ public class myTwitter extends AppCompatActivity {
         Bundle bundle = in.getExtras();
         String photographer = bundle.getString("Photographer");
 
+        //Attempt to get a list of users who tweeted using the photographers name
+        //Convert it into a json string
         String json = null;
         try {
-            QueryResult local = new myTask().execute(photographer).get();
+            QueryResult local = new getJSON().execute(photographer).get();
             //Have a list of status
             List<Status> tweets = local.getTweets();
              Gson gson = new Gson();
@@ -62,6 +64,7 @@ public class myTwitter extends AppCompatActivity {
          e.printStackTrace();
         }
 
+        //JSON recieved is in one big array
         JSONArray jsonArray = null;
         try {
             jsonArray = new JSONArray(json);
@@ -69,6 +72,8 @@ public class myTwitter extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        //GO through the array and find the jsonObjects,
+        //call DisplayUser on that object
         for(int i = 0; i < jsonArray.length(); i++)
         {
             JSONObject jsonObject = null;
@@ -81,6 +86,8 @@ public class myTwitter extends AppCompatActivity {
         }
     }
 
+    //Display the user's information, including time of tweet,
+    //profile picture, username and location in profile
     private void DisplayUser(JSONObject jsonObject)
     {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.mylinearlayout);
@@ -89,14 +96,13 @@ public class myTwitter extends AppCompatActivity {
         linearLayout.addView(imageView);
         linearLayout.addView(textView);
 
-
         try {
 
             String profilePic = getProfilePic(jsonObject);
-
             Uri uri = Uri.parse(profilePic);
             URL url = new URL(uri.toString());
             Picasso.with(this).load(String.valueOf(url)).into(imageView);
+
             textView.setText(" " + getUser(jsonObject) + " is located in: " +
                     getLocation(jsonObject) + " and created this tweet at " + jsonObject.getString("createdAt") + "\n");
         } catch (JSONException e) {
@@ -106,6 +112,7 @@ public class myTwitter extends AppCompatActivity {
         }
     }
 
+    //Returns the url for the users profile picture
     private String getProfilePic(JSONObject jsonObject)
     {
         String imageurl = null;
@@ -119,6 +126,7 @@ public class myTwitter extends AppCompatActivity {
         return imageurl;
     }
 
+    //Return the user's location they have on their profile
     private String getLocation(JSONObject jsonObject)
     {
         String location = null;
@@ -136,6 +144,7 @@ public class myTwitter extends AppCompatActivity {
         return location;
     }
 
+    //Return the user's username
     private String getUser(JSONObject jsonObject)
     {
         String userName = null;
@@ -151,7 +160,7 @@ public class myTwitter extends AppCompatActivity {
 
     //Pass a string to asynctask that holds the photographer to search for
     //Return the JSONObject as a string
-    private class myTask extends AsyncTask<String, Void, QueryResult>
+    private class getJSON extends AsyncTask<String, Void, QueryResult>
     {
         @Override
         protected QueryResult doInBackground(String... params)
@@ -179,12 +188,12 @@ public class myTwitter extends AppCompatActivity {
         }
 
 /*
+        This whole chunk is code that can write the json to a file
+        on the phone itself
+
          @Override
         protected void onPostExecute(QueryResult result)
         {
-            // This whole chunk is code that can write the json to a file
-           // on the phone
-
             List<twitter4j.Status> tweets = null;
             tweets = result.getTweets();
             Gson gson = new Gson();

@@ -51,16 +51,17 @@ import org.json.JSONObject;
 
 public class JSON extends AppCompatActivity
 {
-    //Global object because getTwitter needs to have access to this jsonObject
+    //Global object because FB_share needs to have access to this jsonObject
     JSONObject jsonObject;
     //Global object for facebook
     CallbackManager callbackManager = CallbackManager.Factory.create();
 
-    public void getTwitter(View view)
+    //Switches to the Twitter activity to see the users who tweeted using the
+    //photographer's name
+    public void getTwitterUsers(View view)
     {
+
         Intent intent = new Intent(this, myTwitter.class);
-        //Go to SQL table and get the most recent entry
-        //Pass to to Twitter class
         Storage storage = new Storage(this);
         intent.putExtra("Photographer", storage.recieveData());
         startActivity(intent);
@@ -79,7 +80,7 @@ public class JSON extends AppCompatActivity
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                // App codeMi
+                // App code
             }
 
             @Override
@@ -92,8 +93,6 @@ public class JSON extends AppCompatActivity
                 // App code
             }
         });
-
-        callbackManager = CallbackManager.Factory.create();
 
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -130,7 +129,7 @@ public class JSON extends AppCompatActivity
             URL mynewurl = new URL(myuri.toString());
 
             //adding the .get makes the asynctask able to return the JSONObject
-            jsonObject = new MyTask().execute(mynewurl).get();
+            jsonObject = new getJSON().execute(mynewurl).get();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -158,23 +157,7 @@ public class JSON extends AppCompatActivity
         }
 
         startActivity(intent);
-/*
-        ImageView imagea = (ImageView) findViewById(R.id.image);
-        Bitmap image = ((BitmapDrawable) imagea.getDrawable()).getBitmap();
-        //Bitmap image = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        SharePhoto photo = new SharePhoto.Builder()
-                .setBitmap(image)
-                .build();
-        SharePhotoContent content = new SharePhotoContent.Builder()
-                .addPhoto(photo)
-                .build();
-
-       // ShareButton shareButton = (ShareButton)findViewById(R.id.fb_share_button);
-       // shareButton.setShareContent(content);
-        shareDialog.show(content, null);
-*/
     }
-
 
 
     //Opens up the youtube app to play the video
@@ -187,12 +170,13 @@ public class JSON extends AppCompatActivity
             e.printStackTrace();
         }
 
-        //Still need work to get it to play the video
+        //Create uri for video and open up youtube app
         Uri uri = Uri.parse(videourl);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
     }
 
+    //Gets the photographer's name (if available) and updates the database
     private void getPhotographerName(JSONObject jsonObject)
     {
         //Get the id's for the textview and button to change their message
@@ -202,7 +186,7 @@ public class JSON extends AppCompatActivity
         String photographerName = null;
         Storage database = new Storage(this);
 
-        //There is a photographer, so store it in database
+        //If there is a photographer, store it in database
         if(jsonObject.has("copyright")) {
             //Accessing database
             try {
@@ -223,6 +207,7 @@ public class JSON extends AppCompatActivity
         }
     }
 
+    //Determine if the media is an image or a video
     private void getImageorVideo(JSONObject jsonObject)
     {
         String ImageOrVideoMedia = null;
@@ -267,7 +252,7 @@ public class JSON extends AppCompatActivity
     }
 
     //Takes a url, doesnt need to update anything, returns a JSONObject
-    private class MyTask extends AsyncTask<URL, Void, JSONObject>
+    private class getJSON extends AsyncTask<URL, Void, JSONObject>
     {
         String data;
         @Override
